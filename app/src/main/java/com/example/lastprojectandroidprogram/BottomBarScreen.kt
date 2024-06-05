@@ -19,6 +19,7 @@ sealed class BottomBarScreen(
         icon = Icons.Default.Home
     )
 
+
     object Course : BottomBarScreen(
         route = "COURSE",
         title = "COURSE",
