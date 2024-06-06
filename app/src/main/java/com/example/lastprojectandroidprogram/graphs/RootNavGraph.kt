@@ -25,6 +25,6 @@ object Graph {
     const val ROOT = "root_graph"
     const val AUTHENTICATION = "auth_graph"
     const val HOME = "home_graph"
-    var TOKEN_ACCESS = ""
+    var TOKEN_ACCESS = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMSwiZXhwIjoxNzE3NjU0MTk2fQ.yhonyg9i30Bcgp0-682kBg9h7xl_LbFOreUT1ye1qLU"
 
 }

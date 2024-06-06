@@ -1,6 +1,7 @@
 package com.example.lastprojectandroidprogram.Service
 import android.util.Log
 import com.example.lastprojectandroidprogram.CallBackInterface.LoginCallback
+import com.example.lastprojectandroidprogram.CallBackInterface.ParticipateCallBack
 import com.example.lastprojectandroidprogram.CallBackInterface.RegisterCallback
 import com.example.lastprojectandroidprogram.Request.RequestRegister
 import com.example.lastprojectandroidprogram.Response.ResponseLogin
@@ -53,6 +54,26 @@ fun login(username: String, password: String ,callback: LoginCallback) {
         override fun onFailure(call: Call<ResponseLogin>, t: Throwable) {
             Log.d("Login", "Failed: ${t.message}")
             callback.onResult(null)
+        }
+    })
+}
+
+fun participateCourse(token: String, courseId: Int, callback: ParticipateCallBack) {
+    val body = mapOf("course_id" to courseId)
+    val call = ServiceInstance.apiService.participateCourse("Bearer $token", body)
+
+    call.enqueue(object : Callback<Void> {
+        override fun onResponse(call: Call<Void>, response: Response<Void>) {
+            if (response.isSuccessful && response.code() == 201) {
+                callback.onResult(true)
+            } else {
+                callback.onResult(false)
+            }
+        }
+
+        override fun onFailure(call: Call<Void>, t: Throwable) {
+            Log.d("ParticipateCourse", "Failed: ${t.message}")
+            callback.onResult(false)
         }
     })
 }

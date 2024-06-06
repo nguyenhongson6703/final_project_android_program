@@ -123,7 +123,7 @@ fun LoginScreen(onLoginClick: () -> Unit, onSignUpClick: () -> Unit) {
                         if(response != null){
                             Log.d("Login", response.access_token)
                             Toast.makeText(context, "Login successful", Toast.LENGTH_SHORT).show()
-                            Graph.TOKEN_ACCESS = response.access_token
+                            //Graph.TOKEN_ACCESS = response.access_token
                             Log.d("Login", "access token ${Graph.TOKEN_ACCESS}")
                             onLoginClick()
                         }else{

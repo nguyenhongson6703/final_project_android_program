@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -25,6 +27,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,15 +36,21 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.lastprojectandroidprogram.Response.CourseParticipateResponse
+import com.example.lastprojectandroidprogram.ViewModel.CourseParticipateViewModel
 import com.example.lastprojectandroidprogram.components.ProfileImage
 import com.example.lastprojectandroidprogram.components.ProgressBar
 import com.example.lastprojectandroidprogram.components.SearchBar
+import com.example.lastprojectandroidprogram.graphs.Graph
 
 @Composable
 fun CourseListItem(
 
     isSelected: Boolean = false,
     modifier: Modifier = Modifier,
+    courseParticipate: CourseParticipateResponse
+
 
     ) {
     Card(
@@ -76,11 +86,11 @@ fun CourseListItem(
 
 
                     Text(
-                        text = "Khóa học toiec ",
+                        text = "${courseParticipate.name}",
                         style = MaterialTheme.typography.titleLarge
                     )
                     Text(
-                        text = "22-12-2-2022 - 21-12-2025",
+                        text = "${courseParticipate.startDate.substringBefore('T')} - 21-12-2025",
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -106,21 +116,21 @@ fun CourseListItem(
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "47%",
+                    Text(text = "${courseParticipate.percentCompleted}%",
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "400/800 mục đã học",
+                    Text(text = "${courseParticipate.learnedWord}/${courseParticipate.quantityWords} mục đã học",
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
 
             }
             Spacer(modifier = Modifier.height(12.dp))
-            ProgressBar(totalJobs = 300, completedJobs = 200)
+            ProgressBar(totalJobs = courseParticipate.quantityWords, completedJobs = courseParticipate.learnedWord)
             Spacer(modifier = Modifier.height(12.dp))
             Row(modifier = Modifier.fillMaxWidth()) {
                 Column(
@@ -128,21 +138,21 @@ fun CourseListItem(
                         .weight(1f),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    ButtonRole(roleButton = "Ôn siêu tốc", imageVector = Icons.Default.WatchLater )
+                    ButtonRole(roleButton = "Ôn siêu tốc", imageVector = Icons.Default.WatchLater, courseParticipate )
                 }
                 Column(
                     modifier = Modifier
                         .weight(1f),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    ButtonRole(roleButton = "Học từ mới", imageVector = Icons.Default.AutoStories)
+                    ButtonRole(roleButton = "Học từ mới", imageVector = Icons.Default.AutoStories, courseParticipate)
                 }
                 Column(
                     modifier = Modifier
                         .weight(1f),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    ButtonRole(roleButton = "Ôn tập", imageVector = Icons.Default.MenuBook )
+                    ButtonRole(roleButton = "Ôn tập", imageVector = Icons.Default.MenuBook, courseParticipate )
                 }
 
 
@@ -154,7 +164,7 @@ fun CourseListItem(
     }
 }
 @Composable
-fun ButtonRole(roleButton : String, imageVector : ImageVector){
+fun ButtonRole(roleButton : String, imageVector : ImageVector, courseParticipate: CourseParticipateResponse){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -179,19 +189,33 @@ fun ButtonRole(roleButton : String, imageVector : ImageVector){
     }
 }
 @Composable
-fun MainHomeScreen(modifier: Modifier = Modifier){
+fun MainHomeScreen(modifier: Modifier = Modifier,  courseParticipateViewModel: CourseParticipateViewModel = viewModel()){
+
+    val courseParticipations by courseParticipateViewModel.courseParticipates.observeAsState(emptyList())
+    val error by courseParticipateViewModel.error.observeAsState()
+
+    // Fetch course participations
+    courseParticipateViewModel.fetchCourseParticipates(Graph.TOKEN_ACCESS)
     Column(modifier) {
         SearchBar()
-        Column(
-            modifier = modifier
-                .verticalScroll(rememberScrollState())
+//        Column(
+//            modifier = modifier
+//                .verticalScroll(rememberScrollState())
+//
+//        ) {
+//            CourseListItem()
+//            CourseListItem()
+//            CourseListItem()
+//            CourseListItem()
+//        }
 
-        ) {
-            CourseListItem()
-            CourseListItem()
-            CourseListItem()
-            CourseListItem()
+
+        LazyColumn(modifier = Modifier.padding(bottom = 12.dp)) {
+            items(courseParticipations) { participation ->
+                CourseListItem(courseParticipate = participation)
+            }
         }
+        Spacer(modifier = Modifier.height(40.dp))
 
 
     }

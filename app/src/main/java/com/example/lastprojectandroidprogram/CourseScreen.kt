@@ -1,6 +1,7 @@
 package com.example.lastprojectandroidprogram
 
 
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -8,7 +9,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -21,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.ListAlt
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -34,6 +38,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,9 +51,13 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.lastprojectandroidprogram.CallBackInterface.ParticipateCallBack
 import com.example.lastprojectandroidprogram.Response.CourseResponse
+import com.example.lastprojectandroidprogram.Service.participateCourse
 import com.example.lastprojectandroidprogram.ViewModel.CourseViewModel
 import com.example.lastprojectandroidprogram.components.SearchBar
+import com.example.lastprojectandroidprogram.graphs.Graph
+import androidx.compose.ui.platform.LocalContext
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @Composable
@@ -90,21 +100,25 @@ fun CoureContent(modifier : Modifier = Modifier){
     LaunchedEffect(Unit) {
         courseViewModel.fetchCourses()
     }
-    LazyColumn {
+    LazyColumn(modifier = Modifier.padding(bottom = 12.dp)) {
         items(courses) { course ->
             CourseItem(course = course)
         }
     }
+    Spacer(modifier = Modifier.height(40.dp))
 
 }
 @Composable
 fun CourseItem(modifier: Modifier = Modifier, isSelected : Boolean = false, course: CourseResponse){
+    val showDialog = remember { mutableStateOf(false) }
+    val context = LocalContext.current
     Surface(tonalElevation = 5.dp, modifier = modifier) {
         Card(
             modifier = modifier
                 .padding(horizontal = 16.dp, vertical = 4.dp)
                 .semantics { selected = isSelected }
-                .clickable { //* navigation*//
+                .clickable {
+                    showDialog.value = true
                 },
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceVariant
@@ -179,5 +193,46 @@ fun CourseItem(modifier: Modifier = Modifier, isSelected : Boolean = false, cour
         }
 
 
+    }
+    if (showDialog.value) {
+        AlertDialog(
+            onDismissRequest = {
+                showDialog.value = false
+            },
+            title = {
+                Text(text = "Tham gia khóa học")
+            },
+            text = {
+                Text("Bạn có muốn tham gia khóa học này không?")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        participateCourse(Graph.TOKEN_ACCESS, course.id, object : ParticipateCallBack {
+                            override fun onResult(success: Boolean) {
+                                if (success) {
+                                    Toast.makeText(context, "Tham gia khóa học thành công", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    Toast.makeText(context, "Không thể tham gia khóa học", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+                        })
+                        showDialog.value = false
+
+                    }
+                ) {
+                    Text("OK")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        showDialog.value = false
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 }
