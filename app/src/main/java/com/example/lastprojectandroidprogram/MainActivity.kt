@@ -70,6 +70,9 @@ import com.example.lastprojectandroidprogram.Response.CourseResponse
 import com.example.lastprojectandroidprogram.ViewModel.CourseViewModel
 import com.example.lastprojectandroidprogram.components.AppVocabularyBottomNavigation
 import com.example.lastprojectandroidprogram.detail_ui.LearnVocabulary
+import com.example.lastprojectandroidprogram.detail_ui.ListenScreen
+import com.example.lastprojectandroidprogram.detail_ui.VocabularyScreen
+import com.example.lastprojectandroidprogram.detail_ui.VocabularyTranslateScreen
 import com.example.lastprojectandroidprogram.graphs.RootNavigationGraph
 import com.example.lastprojectandroidprogram.login.LoginScreen
 import com.example.lastprojectandroidprogram.signup.SignUpScreen
@@ -85,7 +88,8 @@ class MainActivity : ComponentActivity() {
         setContent {
             AppTheme {
 
-
+                 //ListenScreen()
+                //VocabularyTranslateScreen()
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,

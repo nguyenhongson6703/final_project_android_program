@@ -142,7 +142,7 @@ fun CourseListItem(
                     verticalArrangement = Arrangement.Center
                 ) {
                     ButtonRole(roleButton = "Ôn siêu tốc", imageVector = Icons.Default.WatchLater, courseParticipate,
-                        {navController.navigate(DetailsScreen.Information.passParams(courseParticipate.courseId, 1, 5, 0)) } )
+                        {navController.navigate(DetailsScreen.DetailReview.passParams(courseParticipate.courseId, 1, 5, 0)) } )
                 }
                 Column(
                     modifier = Modifier
@@ -158,7 +158,7 @@ fun CourseListItem(
                     verticalArrangement = Arrangement.Center
                 ) {
                     ButtonRole(roleButton = "Ôn tập", imageVector = Icons.Default.MenuBook, courseParticipate,
-                        {navController.navigate(DetailsScreen.Information.passParams(courseParticipate.courseId, 1, 5, 0)) })
+                        {navController.navigate(DetailsScreen.DetailReview.passParams(courseParticipate.courseId, 1, 5, 0)) })
                 }
 
 

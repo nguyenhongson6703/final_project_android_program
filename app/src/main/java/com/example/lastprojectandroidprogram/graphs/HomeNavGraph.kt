@@ -12,9 +12,11 @@ import com.example.lastprojectandroidprogram.BottomBarScreen
 import com.example.lastprojectandroidprogram.CourseScreeen
 import com.example.lastprojectandroidprogram.HomeScreen
 import com.example.lastprojectandroidprogram.MainHomeScreen
+import com.example.lastprojectandroidprogram.detail_ui.DetailReviewScreen
 import com.example.lastprojectandroidprogram.detail_ui.LearnVocabulary
 import com.example.lastprojectandroidprogram.test.Detail
 import com.example.lastprojectandroidprogram.test.OverviewScreen
+import kotlin.random.Random
 
 
 @Composable
@@ -42,40 +44,40 @@ fun HomeNavGraph(
 fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.DETAIL,
-        startDestination = DetailsScreen.Information.route
+        startDestination = DetailsScreen.NewWord.route
     ) {
-        composable(route = DetailsScreen.Information.route
-        ,  arguments = listOf(
-                navArgument("id_course") {
-                    type = NavType.IntType
-                    defaultValue = 1
-                },
-                navArgument("current") {
-                    type = NavType.IntType
-                    defaultValue = 1
-                },
-                navArgument("des") {
-                    type = NavType.IntType
-                    defaultValue = 5
-                },
-                navArgument("point") {
-                    type = NavType.IntType
-                    defaultValue = 0
-                }
-
-
-
-
-            )) {
-                backStackEntry ->
-            val courseId = backStackEntry.arguments?.getInt("id_course") ?: 1
-            val current = backStackEntry.arguments?.getInt("current") ?: 1
-            val des = backStackEntry.arguments?.getInt("des") ?: 5
-            val point =  backStackEntry.arguments?.getInt("point") ?: 0
-
-            
-            Detail(idCourse =courseId , current = current , des =des , point = point, navController = navController)
-        }
+//        composable(route = DetailsScreen.Information.route
+//        ,  arguments = listOf(
+//                navArgument("id_course") {
+//                    type = NavType.IntType
+//                    defaultValue = 1
+//                },
+//                navArgument("current") {
+//                    type = NavType.IntType
+//                    defaultValue = 1
+//                },
+//                navArgument("des") {
+//                    type = NavType.IntType
+//                    defaultValue = 5
+//                },
+//                navArgument("point") {
+//                    type = NavType.IntType
+//                    defaultValue = 0
+//                }
+//
+//
+//
+//
+//            )) {
+//                backStackEntry ->
+//            val courseId = backStackEntry.arguments?.getInt("id_course") ?: 1
+//            val current = backStackEntry.arguments?.getInt("current") ?: 1
+//            val des = backStackEntry.arguments?.getInt("des") ?: 5
+//            val point =  backStackEntry.arguments?.getInt("point") ?: 0
+//
+//
+//            Detail(idCourse =courseId , current = current , des =des , point = point, navController = navController)
+//        }
         composable(route = DetailsScreen.NewWord.route
             ,  arguments = listOf(
                 navArgument("id_course") {
@@ -108,6 +110,38 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
 
             LearnVocabulary(idCourse =courseId , current = current , des =des , point = point, navController = navController)
         }
+        composable(route = DetailsScreen.DetailReview.route
+            ,  arguments = listOf(
+                navArgument("id_course") {
+                    type = NavType.IntType
+                    defaultValue = 1
+                },
+                navArgument("current") {
+                    type = NavType.IntType
+                    defaultValue = 1
+                },
+                navArgument("des") {
+                    type = NavType.IntType
+                    defaultValue = 5
+                },
+                navArgument("point") {
+                    type = NavType.IntType
+                    defaultValue = 0
+                }
+
+
+
+
+            )) {
+                backStackEntry ->
+            val courseId = backStackEntry.arguments?.getInt("id_course") ?: 1
+            val current = backStackEntry.arguments?.getInt("current") ?: 1
+            val des = backStackEntry.arguments?.getInt("des") ?: 5
+            val point =  backStackEntry.arguments?.getInt("point") ?: 0
+
+
+            DetailReviewScreen(idCourse =courseId , current = current , des =des , point = point, navController = navController)
+        }
         composable(route = DetailsScreen.Overview.route,
             arguments = listOf(
                 navArgument("point") {
@@ -139,6 +173,18 @@ sealed class DetailsScreen(val route: String) {
             return "information_screen?id_course=$id_course&current=$current&des=$des&point=$point"
         }
     }
+    object DetailReview : DetailsScreen(route = "detail_review_screen?id_course={id_course}&current={current}&des={des}&point={point}") {
+        fun passParams(
+            id_course: Int,
+            current: Int,
+            des: Int,
+            point: Int
+
+        ): String {
+            return "detail_review_screen?id_course=$id_course&current=$current&des=$des&point=$point"
+        }
+    }
+
     object NewWord : DetailsScreen(route = "new_word_screen?id_course={id_course}&current={current}&des={des}&point={point}") {
         fun passParams(
             id_course: Int,

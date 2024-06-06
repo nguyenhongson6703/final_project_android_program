@@ -17,10 +17,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,9 +38,11 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
@@ -48,20 +52,38 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-
-
-
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.lastprojectandroidprogram.Response.WordResponse
+import com.example.lastprojectandroidprogram.ViewModel.WordReviewViewModel
+import com.example.lastprojectandroidprogram.graphs.DetailsScreen
+import com.example.lastprojectandroidprogram.graphs.Graph
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun VocabularyTranslateScreen() {
+fun VocabularyTranslateScreen(idCourse: Int, current: Int, des: Int, point: Int, navController: NavHostController) {
+    val wordViewModel : WordReviewViewModel = viewModel()
+    val words by wordViewModel.words.observeAsState()
+    val error by wordViewModel.error.observeAsState()
+
+    LaunchedEffect(Unit) {
+        wordViewModel.fetchWords(1, Graph.TOKEN_ACCESS)
+    }
+
+
+
     val colorScheme = MaterialTheme.colorScheme.copy(
         background = Color(0xFF_FFFCF3),
         onBackground = Color.White
     )
     MaterialTheme(colorScheme = colorScheme) {
-        Column(modifier = Modifier.fillMaxSize()) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 80.dp)
+            .verticalScroll(
+                rememberScrollState()
+            )) {
             TopAppBar(
                 title = { Text(text = "TOEIC NÂNG CAO", style = TextStyle(fontWeight = FontWeight.Bold), fontSize = 25.sp) },
                 navigationIcon = {
@@ -72,9 +94,9 @@ fun VocabularyTranslateScreen() {
                 colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.surfaceVariant)
             )
             Spacer(modifier = Modifier.height(20.dp))
-            ProgressBar(totalJobs = 20, completedJobs = 1)
+            ProgressBar(totalJobs = des, completedJobs = current)
             Spacer(modifier = Modifier.height(20.dp))
-            VocabularyTranslateCard()
+            words?.let { VocabularyTranslateCard(it, idCourse, current, des,point, navController) }
             Card(
                 modifier = Modifier.padding(4.dp), // Thêm padding cho Card
                 colors =  CardDefaults.cardColors(
@@ -83,7 +105,13 @@ fun VocabularyTranslateScreen() {
                 shape = RoundedCornerShape(10.dp)
             ) {
                 Button(
-                    onClick = { /*TODO: Handle button click*/ },
+                    onClick = {
+                        if(current < des){
+                            navController.navigate(DetailsScreen.DetailReview.passParams(idCourse, current + 1, des , point+2))
+                        }else{
+                            navController.navigate(DetailsScreen.Overview.passParams(point))
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(Color(0xFF_FFBB00)),
@@ -103,16 +131,17 @@ fun VocabularyTranslateScreen() {
 
 
 @Composable
-fun VocabularyTranslateCard() {
+fun VocabularyTranslateCard(words: List<WordResponse>,idCourse: Int, current: Int, des: Int, point: Int, navController: NavHostController) {
+    val suffledWords = words.shuffled()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
-            text = "Fire",
+            text = "${words[0].english}",
             style = TextStyle(fontSize = 50.sp, fontWeight = FontWeight.Bold)
         )
         Text(
-            text = "(n)",
+            text = "${words[0].parts_of_speech}",
             style = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Bold)
         )
         Spacer(modifier = Modifier.height(50.dp))
@@ -128,7 +157,10 @@ fun VocabularyTranslateCard() {
                     .padding(16.dp)
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
-                ListButton(options = listOf("Cơn gió", "Ngọn lửa", "Thoáng mát", "Không khí"))
+                ButtonResult(word = suffledWords[0], idTrue = words[0].id, idCourse, current, des,point,  navController)
+                ButtonResult(word = suffledWords[1], idTrue = words[0].id, idCourse, current, des,point,  navController)
+                ButtonResult(word = suffledWords[2], idTrue = words[0].id, idCourse, current, des,point,  navController)
+                ButtonResult(word = suffledWords[3], idTrue = words[0].id, idCourse, current, des,point,  navController)
             }
         }
     }
@@ -142,6 +174,6 @@ fun VocabularyTranslateCard() {
 @Composable
 fun CheckTranslatePreview() {
     AppTheme {
-        VocabularyTranslateScreen()
+        //VocabularyTranslateScreen()
     }
 }
