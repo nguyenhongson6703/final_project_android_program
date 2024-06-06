@@ -3,7 +3,9 @@ import android.util.Log
 import com.example.lastprojectandroidprogram.CallBackInterface.LoginCallback
 import com.example.lastprojectandroidprogram.CallBackInterface.ParticipateCallBack
 import com.example.lastprojectandroidprogram.CallBackInterface.RegisterCallback
+import com.example.lastprojectandroidprogram.CallBackInterface.ScoreCallBack
 import com.example.lastprojectandroidprogram.Request.RequestRegister
+import com.example.lastprojectandroidprogram.Request.ScoreRequest
 import com.example.lastprojectandroidprogram.Response.ResponseLogin
 import com.example.lastprojectandroidprogram.Response.ResponseRegister
 import retrofit2.Call
@@ -73,6 +75,26 @@ fun participateCourse(token: String, courseId: Int, callback: ParticipateCallBac
 
         override fun onFailure(call: Call<Void>, t: Throwable) {
             Log.d("ParticipateCourse", "Failed: ${t.message}")
+            callback.onResult(false)
+        }
+    })
+}
+fun ScoreVocabulary(token: String, courseId: Int, vocabularyId: Int, callback: ScoreCallBack) {
+
+    val body = ScoreRequest(courseId, vocabularyId)
+    val call = ServiceInstance.apiService.scoreVocabulary("Bearer $token", body)
+
+    call.enqueue(object : Callback<Void> {
+        override fun onResponse(call: Call<Void>, response: Response<Void>) {
+            if (response.isSuccessful && response.code() == 200) {
+                callback.onResult(true)
+            } else {
+                callback.onResult(false)
+            }
+        }
+
+        override fun onFailure(call: Call<Void>, t: Throwable) {
+            Log.d("Score", "Failed: ${t.message}")
             callback.onResult(false)
         }
     })

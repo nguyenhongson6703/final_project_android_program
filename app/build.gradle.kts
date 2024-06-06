@@ -82,4 +82,6 @@ dependencies {
     // runtime compse
     implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.1")
     implementation ("androidx.compose.runtime:runtime-livedata:1.6.7")
+    // load image from url
+    implementation ("io.coil-kt:coil-compose:2.1.0")
 }

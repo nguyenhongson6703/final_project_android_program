@@ -37,11 +37,13 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
 import com.example.lastprojectandroidprogram.Response.CourseParticipateResponse
 import com.example.lastprojectandroidprogram.ViewModel.CourseParticipateViewModel
 import com.example.lastprojectandroidprogram.components.ProfileImage
 import com.example.lastprojectandroidprogram.components.ProgressBar
 import com.example.lastprojectandroidprogram.components.SearchBar
+import com.example.lastprojectandroidprogram.graphs.DetailsScreen
 import com.example.lastprojectandroidprogram.graphs.Graph
 
 @Composable
@@ -49,7 +51,8 @@ fun CourseListItem(
 
     isSelected: Boolean = false,
     modifier: Modifier = Modifier,
-    courseParticipate: CourseParticipateResponse
+    courseParticipate: CourseParticipateResponse,
+    navController: NavHostController
 
 
     ) {
@@ -116,7 +119,7 @@ fun CourseListItem(
                 Column(
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text(text = "${courseParticipate.percentCompleted}%",
+                    Text(text = "${String.format("%.2f", courseParticipate.percentCompleted)}%",
                         style = MaterialTheme.typography.bodyLarge,
                     )
                 }
@@ -138,21 +141,24 @@ fun CourseListItem(
                         .weight(1f),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    ButtonRole(roleButton = "Ôn siêu tốc", imageVector = Icons.Default.WatchLater, courseParticipate )
+                    ButtonRole(roleButton = "Ôn siêu tốc", imageVector = Icons.Default.WatchLater, courseParticipate,
+                        {navController.navigate(DetailsScreen.Information.passParams(courseParticipate.courseId, 1, 5, 0)) } )
                 }
                 Column(
                     modifier = Modifier
                         .weight(1f),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    ButtonRole(roleButton = "Học từ mới", imageVector = Icons.Default.AutoStories, courseParticipate)
+                    ButtonRole(roleButton = "Học từ mới", imageVector = Icons.Default.AutoStories, courseParticipate,
+                        {navController.navigate(DetailsScreen.NewWord.passParams(courseParticipate.courseId, 1, 5, 0)) })
                 }
                 Column(
                     modifier = Modifier
                         .weight(1f),
                     verticalArrangement = Arrangement.Center
                 ) {
-                    ButtonRole(roleButton = "Ôn tập", imageVector = Icons.Default.MenuBook, courseParticipate )
+                    ButtonRole(roleButton = "Ôn tập", imageVector = Icons.Default.MenuBook, courseParticipate,
+                        {navController.navigate(DetailsScreen.Information.passParams(courseParticipate.courseId, 1, 5, 0)) })
                 }
 
 
@@ -164,11 +170,14 @@ fun CourseListItem(
     }
 }
 @Composable
-fun ButtonRole(roleButton : String, imageVector : ImageVector, courseParticipate: CourseParticipateResponse){
+fun ButtonRole(roleButton : String,
+               imageVector : ImageVector,
+               courseParticipate: CourseParticipateResponse,
+               onClick : () -> Unit){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { /*TODO*/ },
+        Button(onClick = onClick,
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.inversePrimary,
@@ -189,7 +198,9 @@ fun ButtonRole(roleButton : String, imageVector : ImageVector, courseParticipate
     }
 }
 @Composable
-fun MainHomeScreen(modifier: Modifier = Modifier,  courseParticipateViewModel: CourseParticipateViewModel = viewModel()){
+fun MainHomeScreen(modifier: Modifier = Modifier,
+                   courseParticipateViewModel: CourseParticipateViewModel = viewModel(),
+                   navController: NavHostController){
 
     val courseParticipations by courseParticipateViewModel.courseParticipates.observeAsState(emptyList())
     val error by courseParticipateViewModel.error.observeAsState()
@@ -198,24 +209,13 @@ fun MainHomeScreen(modifier: Modifier = Modifier,  courseParticipateViewModel: C
     courseParticipateViewModel.fetchCourseParticipates(Graph.TOKEN_ACCESS)
     Column(modifier) {
         SearchBar()
-//        Column(
-//            modifier = modifier
-//                .verticalScroll(rememberScrollState())
-//
-//        ) {
-//            CourseListItem()
-//            CourseListItem()
-//            CourseListItem()
-//            CourseListItem()
-//        }
 
-
-        LazyColumn(modifier = Modifier.padding(bottom = 12.dp)) {
+        LazyColumn(modifier = Modifier.padding(bottom = 60.dp)) {
             items(courseParticipations) { participation ->
-                CourseListItem(courseParticipate = participation)
+                CourseListItem(courseParticipate = participation , navController = navController )
             }
         }
-        Spacer(modifier = Modifier.height(40.dp))
+
 
 
     }

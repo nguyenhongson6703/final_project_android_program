@@ -100,12 +100,12 @@ fun CoureContent(modifier : Modifier = Modifier){
     LaunchedEffect(Unit) {
         courseViewModel.fetchCourses()
     }
-    LazyColumn(modifier = Modifier.padding(bottom = 12.dp)) {
+    LazyColumn(modifier = Modifier.padding(bottom = 80.dp)) {
         items(courses) { course ->
             CourseItem(course = course)
         }
     }
-    Spacer(modifier = Modifier.height(40.dp))
+
 
 }
 @Composable
