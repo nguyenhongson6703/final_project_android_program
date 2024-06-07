@@ -13,10 +13,13 @@ import com.example.lastprojectandroidprogram.CourseScreeen
 import com.example.lastprojectandroidprogram.HomeScreen
 import com.example.lastprojectandroidprogram.MainHomeScreen
 import com.example.lastprojectandroidprogram.detail_ui.AnswerVocabulary
+import com.example.lastprojectandroidprogram.detail_ui.CreateCoursesContent
+import com.example.lastprojectandroidprogram.detail_ui.CreateVocabularyContent
 import com.example.lastprojectandroidprogram.detail_ui.DetailReviewScreen
 import com.example.lastprojectandroidprogram.detail_ui.LearnVocabulary
 import com.example.lastprojectandroidprogram.detail_ui.ResultScreen
 import com.example.lastprojectandroidprogram.detail_ui.ReviewScreen
+import com.example.lastprojectandroidprogram.signup.SignUpScreen
 import com.example.lastprojectandroidprogram.test.Detail
 import com.example.lastprojectandroidprogram.test.OverviewScreen
 import kotlin.random.Random
@@ -34,10 +37,10 @@ fun HomeNavGraph(
             MainHomeScreen(navController = navController)
         }
         composable(route = BottomBarScreen.Course.route) {
-           CourseScreeen()
+           CourseScreeen(navController = navController)
         }
         composable(route = BottomBarScreen.Personal.route) {
-           CourseScreeen()
+           CourseScreeen(navController = navController)
         }
         detailsNavGraph(navController = navController)
 
@@ -240,6 +243,36 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
             //OverviewScreen(point = point , navComtroller = navController )
             ResultScreen(idCourse = id_course, point = point , navComtroller = navController)
         }
+
+        composable(route = DetailsScreen.CreateCourse.route){
+            CreateCoursesContent(navController = navController)
+        }
+        composable(route = DetailsScreen.CreateVocabulary.route,
+            arguments = listOf(
+                navArgument("current") {
+                    type = NavType.IntType
+                    defaultValue = 0
+                } ,
+                navArgument("des") {
+                    type = NavType.IntType
+                    defaultValue = 5
+                } ,
+                navArgument("id_course") {
+                    type = androidx.navigation.NavType.IntType
+                    defaultValue = 0
+                }
+
+            )
+        ) {
+                backStackEntry ->
+            val current = backStackEntry.arguments?.getInt("current") ?: 0
+            val id_course = backStackEntry.arguments?.getInt("id_course") ?: 0
+            val des = backStackEntry.arguments?.getInt("des") ?: 5
+
+
+            CreateVocabularyContent(current = current, destination = des, idCourse = id_course, navController = navController )
+        }
+
     }
 }
 
@@ -311,6 +344,17 @@ sealed class DetailsScreen(val route: String) {
             id_course: Int
         ): String {
             return "overview_screen?point=$point&id_course=$id_course"
+        }
+    }
+
+    object CreateCourse : DetailsScreen(route = "create_course_screen")
+    object CreateVocabulary : DetailsScreen(route = "create_vocabulary_screen?current={current}&id_course={id_course}&des={des}"){
+        fun passParams(
+            current: Int,
+            id_course: Int,
+            des: Int
+        ): String {
+            return "create_vocabulary_screen?current=$current&id_course=$id_course&des=$des"
         }
     }
 }

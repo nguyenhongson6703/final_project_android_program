@@ -84,4 +84,5 @@ dependencies {
     implementation ("androidx.compose.runtime:runtime-livedata:1.6.7")
     // load image from url
     implementation ("io.coil-kt:coil-compose:2.1.0")
+    implementation ("com.google.accompanist:accompanist-coil:0.15.0")
 }

@@ -58,19 +58,25 @@ import com.example.lastprojectandroidprogram.ViewModel.CourseViewModel
 import com.example.lastprojectandroidprogram.components.SearchBar
 import com.example.lastprojectandroidprogram.graphs.Graph
 import androidx.compose.ui.platform.LocalContext
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
+import com.example.lastprojectandroidprogram.graphs.DetailsScreen
 import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @Composable
-fun CourseScreeen(modifier: Modifier = Modifier){
+fun CourseScreeen(modifier: Modifier = Modifier, navController: NavHostController){
     Column(modifier) {
-        HeadLineCoure()
+        HeadLineCoure(modifier = modifier) {
+            navController.navigate(DetailsScreen.CreateCourse.route)
+
+        }
         SearchBar()
         CoureContent()
 
     }
 }
 @Composable
-fun HeadLineCoure(modifier: Modifier = Modifier){
+fun HeadLineCoure(modifier: Modifier = Modifier, onClickCreateCourse : () -> Unit){
     Row(
         modifier = modifier
             .fillMaxWidth()
@@ -79,7 +85,7 @@ fun HeadLineCoure(modifier: Modifier = Modifier){
     ){
         Text(text = "Khóa học"
         , style = MaterialTheme.typography.headlineLarge)
-        Button(onClick = { /*TODO*/ },
+        Button(onClick = onClickCreateCourse,
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.tertiary,

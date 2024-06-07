@@ -6,9 +6,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import java.util.Date
 import android.app.DatePickerDialog
+import android.util.Log
 import java.util.Calendar
 import androidx.compose.ui.platform.LocalContext
 import android.widget.DatePicker
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -53,12 +55,18 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.example.lastprojectandroidprogram.CallBackInterface.CourseCreateCallBack
+import com.example.lastprojectandroidprogram.Response.CourseCreateResponse
+import com.example.lastprojectandroidprogram.Service.createCourse
+import com.example.lastprojectandroidprogram.graphs.DetailsScreen
+import com.example.lastprojectandroidprogram.graphs.Graph
 import com.example.lastprojectandroidprogram.ui.theme.AppTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateCoursesContent() {
+fun CreateCoursesContent(navController: NavHostController) {
     val colorScheme = MaterialTheme.colorScheme.copy(
         background = Color(0xFFFFFCF3),
         onBackground = Color.White
@@ -91,25 +99,28 @@ fun CreateCoursesContent() {
 
             Spacer(modifier = Modifier.height(3.dp))
 
-            CourseDetailsInput()
-
-            Button(
-                onClick = { /*TODO: Handle create course action*/ },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(
-                    text = "Tạo Khoá Học",
-                    style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold) // Adjust font size here
-                )
+            CourseDetailsInput { idCourse, quantity ->
+                run {
+                    navController.navigate(
+                        DetailsScreen.CreateVocabulary.passParams(
+                            1,
+                            idCourse,
+                            quantity
+                        )
+                    )
+                }
             }
+
+
         }
     }
 }
 
 @Composable
-fun CourseDetailsInput() {
+fun CourseDetailsInput(onClick: (Int, Int) -> Unit) {
     var courseName by remember { mutableStateOf("") }
     var courseDescription by remember { mutableStateOf("") }
+    var quantityWords by remember { mutableStateOf("") }
     var startDate by remember { mutableStateOf(Calendar.getInstance()) }
     var endDate by remember { mutableStateOf(Calendar.getInstance()) }
 
@@ -126,26 +137,7 @@ fun CourseDetailsInput() {
                 .padding(16.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            // ID Khoá Học
-            Text(
-                text = "ID Khoá Học:",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            TextField(
-                value = courseName,
-                onValueChange = { courseName = it },
-                placeholder = {
-                    Text(
-                        text = "Nhập ID khoá học",
-                        style = MaterialTheme.typography.bodyLarge.copy(color = LocalContentColor.current.copy(alpha = 0.5f))
-                    )
-                },
-                modifier = Modifier.fillMaxWidth(),
-                singleLine = true
-            )
 
-            Spacer(modifier = Modifier.height(16.dp))
 
             // Tên khoá học
             Text(
@@ -175,8 +167,8 @@ fun CourseDetailsInput() {
                 modifier = Modifier.padding(bottom = 8.dp)
             )
             TextField(
-                value = courseDescription,
-                onValueChange = { courseDescription = it },
+                value = quantityWords,
+                onValueChange = { quantityWords = it },
                 placeholder = {
                     Text(
                         text = "Nhập số từ",
@@ -239,6 +231,33 @@ fun CourseDetailsInput() {
             )
         }
     }
+    val context = LocalContext.current
+    Button(
+        onClick = {
+                  createCourse(Graph.TOKEN_ACCESS, name = courseName, description = courseDescription,
+                      quantiryWords = quantityWords.toInt(), object : CourseCreateCallBack{
+                          override fun onResult(response: CourseCreateResponse?) {
+                              if(response != null){
+                                  Log.d("CreateCourse", "Create course successful: ${response.name}")
+                                  Toast.makeText(context, "Create course successful with ${response.name}", Toast.LENGTH_SHORT).show()
+                                  onClick(response.id, response.quantity_words)
+                              }else{
+                                  Log.d("CreateCourse", "Create course fail")
+                                  Toast.makeText(context, "Create course fail", Toast.LENGTH_SHORT).show()
+
+                              }
+
+                          }
+
+                      })
+        },
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = "Tạo Khoá Học",
+            style = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold) // Adjust font size here
+        )
+    }
 }
 
 @Composable
@@ -275,6 +294,6 @@ fun DatePickerButton(
 @Composable
 fun CreateCoursesPreview() {
      AppTheme{
-        CreateCoursesContent()
+        //CreateCoursesContent()
     }
 }

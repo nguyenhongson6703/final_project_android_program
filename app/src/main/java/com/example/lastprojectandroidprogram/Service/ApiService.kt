@@ -1,8 +1,11 @@
 package com.example.lastprojectandroidprogram.Service
 
+import com.example.lastprojectandroidprogram.Request.RequestCreateCourse
 import retrofit2.Call
 import com.example.lastprojectandroidprogram.Request.RequestRegister
 import com.example.lastprojectandroidprogram.Request.ScoreRequest
+import com.example.lastprojectandroidprogram.Request.VocabularyCreateRequest
+import com.example.lastprojectandroidprogram.Response.CourseCreateResponse
 import com.example.lastprojectandroidprogram.Response.CourseParticipateResponse
 import com.example.lastprojectandroidprogram.Response.CourseResponse
 import com.example.lastprojectandroidprogram.Response.ResponseLogin
@@ -64,5 +67,15 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Call<List<WordResponse>>
 
+    @POST("courses/createcourse")
+    fun createCourse(
+        @Header("Authorization") token: String,
+        @Body body: RequestCreateCourse
+    ): Call<CourseCreateResponse>
 
+    @POST("vocabulary/create")
+    fun createVocabulary(
+        @Header("Authorization") token: String,
+        @Body body: VocabularyCreateRequest
+    ): Call<WordResponse>
 }

@@ -15,6 +15,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoStories
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.MenuBook
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.WatchLater
@@ -106,7 +108,7 @@ fun CourseListItem(
 
                 ) {
                     Icon(
-                        imageVector = Icons.Default.MoreVert,
+                        imageVector = Icons.Default.Cancel,
                         contentDescription = "more information",
                     )
                 }
@@ -150,7 +152,7 @@ fun CourseListItem(
                     verticalArrangement = Arrangement.Center
                 ) {
                     ButtonRole(roleButton = "Học từ mới", imageVector = Icons.Default.AutoStories, courseParticipate,
-                        {navController.navigate(DetailsScreen.NewWord.passParams(courseParticipate.courseId, 1, 5, 0)) })
+                        {navController.navigate(DetailsScreen.NewWord.passParams(courseParticipate.courseId, 1, 8, 0)) })
                 }
                 Column(
                     modifier = Modifier
@@ -158,7 +160,7 @@ fun CourseListItem(
                     verticalArrangement = Arrangement.Center
                 ) {
                     ButtonRole(roleButton = "Ôn tập", imageVector = Icons.Default.MenuBook, courseParticipate,
-                        {navController.navigate(DetailsScreen.DetailReview.passParams(courseParticipate.courseId, 1, 5, 0)) })
+                        {navController.navigate(DetailsScreen.DetailReview.passParams(courseParticipate.courseId, 1, 9, 0)) })
                 }
 
 

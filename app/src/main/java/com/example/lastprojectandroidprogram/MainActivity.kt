@@ -69,8 +69,11 @@ import androidx.navigation.compose.rememberNavController
 import com.example.lastprojectandroidprogram.Response.CourseResponse
 import com.example.lastprojectandroidprogram.ViewModel.CourseViewModel
 import com.example.lastprojectandroidprogram.components.AppVocabularyBottomNavigation
+import com.example.lastprojectandroidprogram.detail_ui.CreateCoursesContent
+import com.example.lastprojectandroidprogram.detail_ui.CreateVocabularyContent
 import com.example.lastprojectandroidprogram.detail_ui.LearnVocabulary
 import com.example.lastprojectandroidprogram.detail_ui.ListenScreen
+import com.example.lastprojectandroidprogram.detail_ui.VocabularyCreate
 import com.example.lastprojectandroidprogram.detail_ui.VocabularyScreen
 import com.example.lastprojectandroidprogram.detail_ui.VocabularyTranslateScreen
 import com.example.lastprojectandroidprogram.graphs.RootNavigationGraph
@@ -87,7 +90,8 @@ class MainActivity : ComponentActivity() {
         //courseViewModel.fetchCourses()
         setContent {
             AppTheme {
-
+                //CreateCoursesContent()
+                //CreateVocabularyContent()
                  //ListenScreen()
                 //VocabularyTranslateScreen()
                 Surface(
@@ -168,25 +172,25 @@ class MainActivity : ComponentActivity() {
 
 
 
-@Preview(
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    name = "DefaultPreviewLight"
-)
-@Composable
-fun GreetingPreview() {
-    AppTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = MaterialTheme.colorScheme.background,
-            tonalElevation = 5.dp
-        ) {
-            Scaffold(
-                bottomBar = {
-                    AppVocabularyBottomNavigation()
-                }
-            ) {
-                    paddingValues ->  CourseScreeen(Modifier.padding(paddingValues))
-            }
-        }
-    }
-}
+//@Preview(
+//    uiMode = Configuration.UI_MODE_NIGHT_NO,
+//    name = "DefaultPreviewLight"
+//)
+//@Composable
+//fun GreetingPreview() {
+//    AppTheme {
+//        Surface(
+//            modifier = Modifier.fillMaxSize(),
+//            color = MaterialTheme.colorScheme.background,
+//            tonalElevation = 5.dp
+//        ) {
+//            Scaffold(
+//                bottomBar = {
+//                    AppVocabularyBottomNavigation()
+//                }
+//            ) {
+//                    paddingValues ->  CourseScreeen(Modifier.padding(paddingValues))
+//            }
+//        }
+//    }
+//}

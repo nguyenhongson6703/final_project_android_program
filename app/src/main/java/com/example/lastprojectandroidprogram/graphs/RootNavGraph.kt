@@ -27,9 +27,7 @@ object Graph {
     const val AUTHENTICATION = "auth_graph"
     const val HOME = "home_graph"
     const val DETAIL = "detail_graph"
-    var TOKEN_ACCESS = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMSwiZXhwIjoxNzE3NzA0MzAyfQ.KBJ5MUFQWGmUPlDJllsVk2vCM0pGHtpyihScaFt2uTY"
-
-
+    var TOKEN_ACCESS = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxNCwiZXhwIjoxNzE3NzYyNzgxfQ.7LgC-N4IB1DEYPo6x0Qpi0pU8zUrTvlC40EKadZBjvA"
 }
 object  TotalAnswer{
 

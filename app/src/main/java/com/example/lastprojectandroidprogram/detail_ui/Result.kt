@@ -227,10 +227,10 @@ fun ButtonRole(role : Int, imageVector : ImageVector, idCourse: Int, navComtroll
 
                 navComtroller.navigate(DetailsScreen.ReviewVocabulary.passParams(id_course = idCourse, current = 1, des = 20, times = 3, point = 0))
             }else if(role == 2){
-                navComtroller.navigate(DetailsScreen.NewWord.passParams(id_course = idCourse, current = 1, des = 5, point = 0))
+                navComtroller.navigate(DetailsScreen.NewWord.passParams(id_course = idCourse, current = 1, des = 9, point = 0))
 
             }else{
-                navComtroller.navigate(DetailsScreen.DetailReview.passParams(id_course = idCourse, current = 1, des = 5, point = 0))
+                navComtroller.navigate(DetailsScreen.DetailReview.passParams(id_course = idCourse, current = 1, des = 9, point = 0))
 
         }
         },

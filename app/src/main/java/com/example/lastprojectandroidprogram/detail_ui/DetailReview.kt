@@ -19,6 +19,17 @@ fun DetailReviewScreen(idCourse: Int, current: Int, des: Int, point: Int, navCon
     }else if (current == 4){
         VocabularyScreen(idCourse, current, des, point, navController)
 
+    }else if(current == 5){
+        VocabularyTranslateScreen(idCourse, current, des, point, navController)
+    }else if(current == 6){
+        VocabularyScreen(idCourse, current, des, point, navController)
+
+    }else if (current == 7){
+        VocabularyTranslateScreen(idCourse, current, des, point, navController)
+
+    }else if (current == 8){
+        VocabularyScreen(idCourse, current, des, point, navController)
+
     }else{
         VocabularyTranslateScreen(idCourse, current, des, point, navController)
     }
