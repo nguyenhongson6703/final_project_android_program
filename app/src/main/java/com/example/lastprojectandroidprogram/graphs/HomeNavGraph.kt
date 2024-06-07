@@ -17,6 +17,8 @@ import com.example.lastprojectandroidprogram.detail_ui.CreateCoursesContent
 import com.example.lastprojectandroidprogram.detail_ui.CreateVocabularyContent
 import com.example.lastprojectandroidprogram.detail_ui.DetailReviewScreen
 import com.example.lastprojectandroidprogram.detail_ui.LearnVocabulary
+import com.example.lastprojectandroidprogram.detail_ui.PersonalPage
+import com.example.lastprojectandroidprogram.detail_ui.PersonalScreen
 import com.example.lastprojectandroidprogram.detail_ui.ResultScreen
 import com.example.lastprojectandroidprogram.detail_ui.ReviewScreen
 import com.example.lastprojectandroidprogram.signup.SignUpScreen
@@ -40,7 +42,9 @@ fun HomeNavGraph(
            CourseScreeen(navController = navController)
         }
         composable(route = BottomBarScreen.Personal.route) {
-           CourseScreeen(navController = navController)
+           PersonalScreen(){
+               navController.navigate(Graph.AUTHENTICATION)
+           }
         }
         detailsNavGraph(navController = navController)
 
