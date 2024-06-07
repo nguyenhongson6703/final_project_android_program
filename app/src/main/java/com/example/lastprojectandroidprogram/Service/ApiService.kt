@@ -52,6 +52,12 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Call<WordResponse>
 
+    @GET("vocabulary/{id}")
+    fun getOneVocabulary(
+        @Path("id") id: Int,
+        @Header("Authorization") token: String
+    ): Call<WordResponse>
+
     @GET("vocabulary/review/{id}")
     fun getVocabularyReview(
         @Path("id") id: Int,

@@ -43,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
@@ -71,6 +72,10 @@ fun VocabularyTranslateScreen(idCourse: Int, current: Int, des: Int, point: Int,
         wordViewModel.fetchWords(1, Graph.TOKEN_ACCESS)
     }
 
+    val (trueAnswer, setTrueAnswer) = rememberSaveable {
+        mutableStateOf(true)
+    }
+
 
 
     val colorScheme = MaterialTheme.colorScheme.copy(
@@ -96,7 +101,7 @@ fun VocabularyTranslateScreen(idCourse: Int, current: Int, des: Int, point: Int,
             Spacer(modifier = Modifier.height(20.dp))
             ProgressBar(totalJobs = des, completedJobs = current)
             Spacer(modifier = Modifier.height(20.dp))
-            words?.let { VocabularyTranslateCard(it, idCourse, current, des,point, navController) }
+            words?.let { VocabularyTranslateCard(it, idCourse, current, des,point, navController, {setTrueAnswer(false)}) }
             Card(
                 modifier = Modifier.padding(4.dp), // Thêm padding cho Card
                 colors =  CardDefaults.cardColors(
@@ -107,9 +112,22 @@ fun VocabularyTranslateScreen(idCourse: Int, current: Int, des: Int, point: Int,
                 Button(
                     onClick = {
                         if(current < des){
-                            navController.navigate(DetailsScreen.DetailReview.passParams(idCourse, current + 1, des , point+2))
+                            if(trueAnswer == true){
+                                navController.navigate(DetailsScreen.DetailReview.passParams(idCourse, current + 1, des , point+2))
+
+                            }else{
+                                val route : String? = words?.get(0)?.let {
+                                    DetailsScreen.ErrorWord.passParams(idCourse,current,des,point,
+                                        it.id)
+                                }
+                                if(route != null){
+                                    navController.navigate(route)
+                                }
+
+                            }
+
                         }else{
-                            navController.navigate(DetailsScreen.Overview.passParams(point))
+                            navController.navigate(DetailsScreen.Overview.passParams(point, idCourse))
                         }
                     },
                     modifier = Modifier
@@ -131,8 +149,8 @@ fun VocabularyTranslateScreen(idCourse: Int, current: Int, des: Int, point: Int,
 
 
 @Composable
-fun VocabularyTranslateCard(words: List<WordResponse>,idCourse: Int, current: Int, des: Int, point: Int, navController: NavHostController) {
-    val suffledWords = words.shuffled()
+fun VocabularyTranslateCard(words: List<WordResponse>,idCourse: Int, current: Int, des: Int, point: Int, navController: NavHostController, setAnswer: () -> Unit) {
+    val shuffledWords = remember { words.shuffled() }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -157,10 +175,19 @@ fun VocabularyTranslateCard(words: List<WordResponse>,idCourse: Int, current: In
                     .padding(16.dp)
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
-                ButtonResult(word = suffledWords[0], idTrue = words[0].id, idCourse, current, des,point,  navController)
-                ButtonResult(word = suffledWords[1], idTrue = words[0].id, idCourse, current, des,point,  navController)
-                ButtonResult(word = suffledWords[2], idTrue = words[0].id, idCourse, current, des,point,  navController)
-                ButtonResult(word = suffledWords[3], idTrue = words[0].id, idCourse, current, des,point,  navController)
+                shuffledWords.forEachIndexed { index, word ->
+                    ButtonResult(
+                        word = word,
+                        idTrue = words[0].id,
+                        idCourse,
+                        current,
+                        des,
+                        point,
+                        navController,
+                        setAnswer
+
+                    )
+                }
             }
         }
     }

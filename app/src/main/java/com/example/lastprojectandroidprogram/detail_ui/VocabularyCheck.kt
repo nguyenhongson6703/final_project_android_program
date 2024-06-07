@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
@@ -70,6 +71,10 @@ fun VocabularyScreen(idCourse: Int, current: Int, des: Int, point: Int, navContr
         wordViewModel.fetchWords(idCourse, Graph.TOKEN_ACCESS)
     }
 
+    val (trueAnswer, setTrueAnswer) = rememberSaveable {
+        mutableStateOf(true)
+    }
+
     val colorScheme = MaterialTheme.colorScheme.copy(
         background = Color(0xFF_FFFCF3),
         onBackground = Color.White
@@ -94,7 +99,7 @@ fun VocabularyScreen(idCourse: Int, current: Int, des: Int, point: Int, navContr
             Spacer(modifier = Modifier.height(20.dp))
             ProgressBar(totalJobs = des, completedJobs = current)
             Spacer(modifier = Modifier.height(20.dp))
-            words?.let { VocabularyCard(it, idCourse, current, des,point, navController) }
+            words?.let { VocabularyCard(it, idCourse, current, des,point, navController, {setTrueAnswer(false)}) }
             Card(
                 modifier = Modifier.padding(4.dp), // Thêm padding cho Card
                 colors =  CardDefaults.cardColors(
@@ -105,9 +110,21 @@ fun VocabularyScreen(idCourse: Int, current: Int, des: Int, point: Int, navContr
                 Button(
                     onClick = {
                         if(current < des){
-                            navController.navigate(DetailsScreen.DetailReview.passParams(idCourse, current + 1, des , point+2))
+                            if(trueAnswer == true){
+                                navController.navigate(DetailsScreen.DetailReview.passParams(idCourse, current + 1, des , point+2))
+
+                            }else{
+                                val route : String? = words?.get(0)?.let {
+                                    DetailsScreen.ErrorWord.passParams(idCourse,current,des,point,
+                                        it.id)
+                                }
+                                if(route != null){
+                                    navController.navigate(route)
+                                }
+
+                            }
                         }else{
-                            navController.navigate(DetailsScreen.Overview.passParams(point))
+                            navController.navigate(DetailsScreen.Overview.passParams(point, idCourse))
                         }
                     },
                     modifier = Modifier
@@ -146,8 +163,8 @@ fun ProgressBar(totalJobs: Int, completedJobs: Int) {
 }
 
 @Composable
-fun VocabularyCard(words : List<WordResponse>  ,idCourse: Int, current: Int, des: Int, point: Int, navController: NavHostController) {
-    val wordsShuffle = words.shuffled()
+fun VocabularyCard(words : List<WordResponse>  ,idCourse: Int, current: Int, des: Int, point: Int, navController: NavHostController, setAnswer: () ->Unit) {
+    val shuffledWords = remember { words.shuffled() }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -172,51 +189,28 @@ fun VocabularyCard(words : List<WordResponse>  ,idCourse: Int, current: Int, des
                     .padding(16.dp)
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
-                ButtonTranslateResult(word = wordsShuffle[0], idTrue = words[0].id, idCourse, current, des,point,  navController )
-                ButtonTranslateResult(word = wordsShuffle[1], idTrue = words[0].id, idCourse, current, des,point,  navController )
-                ButtonTranslateResult(word = wordsShuffle[2], idTrue = words[0].id, idCourse, current, des,point,  navController )
-                ButtonTranslateResult(word = wordsShuffle[3], idTrue = words[0].id , idCourse, current, des,point,  navController)
+                shuffledWords.forEachIndexed { index, word ->
+                    ButtonTranslateResult(
+                        word = word,
+                        idTrue = words[0].id,
+                        idCourse,
+                        current,
+                        des,
+                        point,
+                        navController,
+                        setAnswer
+
+                    )
+                }
+
             }
         }
     }
 }
 
 
-//@Composable
-//fun ButtonResult(text : String){
-//    Card(
-//        modifier = Modifier.padding(15.dp), // Thêm padding cho Card
-//        colors =  CardDefaults.cardColors(
-//            containerColor = Color(0xFF_5DE7C0)
-//        ),
-//        shape = RoundedCornerShape(10.dp)
-//    ) {
-//        Button(
-//            onClick = {},
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .background(Color(0xFF_FFFCF3))
-//                .clip(RoundedCornerShape(12.dp)), // Đặt màu nền ở đây
-//            colors = ButtonDefaults.textButtonColors( // Sử dụng textButtonColors
-//                contentColor = Color.Black // Màu của nội dung trong nút
-//            ),
-//
-//            // Bo góc của nút
-//        ) {
-//            Text(text = text , style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)) // Kiểu chữ in đậm
-//        }
-//    }
-//}
-@Composable
-fun ListButton(options: List<String>){
 
-    LazyColumn {
-        items(options){
-                //item -> ButtonResult(text = item)
-        }
-    }
 
-}
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable

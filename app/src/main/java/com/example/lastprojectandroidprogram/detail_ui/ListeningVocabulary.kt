@@ -35,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.clip
@@ -53,6 +54,7 @@ import com.example.lastprojectandroidprogram.ViewModel.WordReviewViewModel
 import com.example.lastprojectandroidprogram.components.ProgressBar
 import com.example.lastprojectandroidprogram.graphs.DetailsScreen
 import com.example.lastprojectandroidprogram.graphs.Graph
+import com.example.lastprojectandroidprogram.graphs.TotalAnswer
 import com.example.lastprojectandroidprogram.ui.theme.AppTheme
 
 
@@ -66,7 +68,9 @@ fun ListenScreen(idCourse: Int, current: Int, des: Int, point: Int, navControlle
     val wordViewModel : WordReviewViewModel = viewModel()
     val words by wordViewModel.words.observeAsState()
     val error by wordViewModel.error.observeAsState()
-
+    val (trueAnswer, setTrueAnswer) = rememberSaveable {
+        mutableStateOf(true)
+    }
     LaunchedEffect(Unit) {
         wordViewModel.fetchWords(idCourse, Graph.TOKEN_ACCESS)
     }
@@ -92,7 +96,7 @@ fun ListenScreen(idCourse: Int, current: Int, des: Int, point: Int, navControlle
             Spacer(modifier = Modifier.height(20.dp))
             ProgressBar(totalJobs = des, completedJobs = current)
             Spacer(modifier = Modifier.height(40.dp))
-            words?.let { VocabularyListen(it, idCourse, current, des,point, navController) }
+            words?.let { VocabularyListen(it, idCourse, current, des,point, navController, {setTrueAnswer(false)}) }
             Card(modifier = Modifier.padding(10.dp), // Thêm padding cho Card
                 colors =  CardDefaults.cardColors(
                     containerColor = Color(0xFF_5DE7C0)
@@ -101,9 +105,23 @@ fun ListenScreen(idCourse: Int, current: Int, des: Int, point: Int, navControlle
                 Button(
                     onClick = {
                         if(current < des){
-                            navController.navigate(DetailsScreen.DetailReview.passParams(idCourse, current + 1, des , point+2))
+                            if(trueAnswer == true){
+
+                                navController.navigate(DetailsScreen.DetailReview.passParams(idCourse, current + 1, des , point+2))
+
+                            }else{
+                                val route : String? = words?.get(0)?.let {
+                                    DetailsScreen.ErrorWord.passParams(idCourse,current,des,point,
+                                        it.id)
+                                }
+                                if(route != null){
+                                    navController.navigate(route)
+                                }
+
+                            }
+
                         }else{
-                            navController.navigate(DetailsScreen.Overview.passParams(point))
+                            navController.navigate(DetailsScreen.Overview.passParams(point, idCourse))
                         }
                     },
                     modifier = Modifier
@@ -123,8 +141,8 @@ fun ListenScreen(idCourse: Int, current: Int, des: Int, point: Int, navControlle
 }
 
 @Composable
-fun VocabularyListen(words: List<WordResponse>,idCourse: Int, current: Int, des: Int, point: Int, navController: NavHostController) {
-    val suffledWords = words.shuffled()
+fun VocabularyListen(words: List<WordResponse>,idCourse: Int, current: Int, des: Int, point: Int, navController: NavHostController, setAnswer: () -> Unit) {
+    val shuffledWords = remember { words.shuffled() }
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -148,19 +166,26 @@ fun VocabularyListen(words: List<WordResponse>,idCourse: Int, current: Int, des:
                     .padding(16.dp)
             ) {
                 Spacer(modifier = Modifier.height(8.dp))
-                ButtonResult(word = suffledWords[0], idTrue = words[0].id, idCourse, current, des,point,  navController)
-                ButtonResult(word = suffledWords[1], idTrue = words[0].id, idCourse, current, des,point, navController)
-                ButtonResult(word = suffledWords[2], idTrue = words[0].id, idCourse, current, des,point, navController)
-                ButtonResult(word = suffledWords[3], idTrue = words[0].id, idCourse, current, des,point, navController)
+                shuffledWords.forEachIndexed { index, word ->
+                    ButtonResult(
+                        word = word,
+                        idTrue = words[0].id,
+                        idCourse,
+                        current,
+                        des,
+                        point,
+                        navController,
+                        setAnswer
 
-
+                    )
+                }
 
             }
         }
     }
 }
 @Composable
-fun ButtonResult(word: WordResponse, idTrue : Int, idCourse: Int, current: Int, des: Int,point: Int,  navController: NavHostController){
+fun ButtonResult(word: WordResponse, idTrue : Int, idCourse: Int, current: Int, des: Int,point: Int,  navController: NavHostController, setAnswer: () -> Unit){
 
     var buttonColor by remember { mutableStateOf(Color(0xFF_FFFCF3)) }
     val context = LocalContext.current
@@ -187,10 +212,13 @@ fun ButtonResult(word: WordResponse, idTrue : Int, idCourse: Int, current: Int, 
                                 }
 
                             })
+                            TotalAnswer.listAnser.add(word)
 
 
 
 
+                }else{
+                    setAnswer()
                 }
             },
             modifier = Modifier
@@ -208,7 +236,7 @@ fun ButtonResult(word: WordResponse, idTrue : Int, idCourse: Int, current: Int, 
     }
 }
 @Composable
-fun ButtonTranslateResult(word: WordResponse, idTrue : Int, idCourse: Int, current: Int, des: Int, point: Int, navController: NavHostController ){
+fun ButtonTranslateResult(word: WordResponse, idTrue : Int, idCourse: Int, current: Int, des: Int, point: Int, navController: NavHostController, setAnswer: () -> Unit ){
 
     var buttonColor by remember { mutableStateOf(Color(0xFF_FFFCF3)) }
     val context = LocalContext.current
@@ -234,6 +262,9 @@ fun ButtonTranslateResult(word: WordResponse, idTrue : Int, idCourse: Int, curre
                         }
 
                     })
+                    TotalAnswer.listAnser.add(word)
+                }else{
+                    setAnswer()
                 }
             },
             modifier = Modifier

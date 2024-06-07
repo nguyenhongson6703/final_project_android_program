@@ -19,7 +19,7 @@ fun Detail( idCourse: Int, current: Int, des: Int, point: Int, navController: Na
             if(current < des){
               navController.navigate(DetailsScreen.Information.passParams(idCourse, current + 1, des , point+2))
             }else{
-                navController.navigate(DetailsScreen.Overview.passParams(point))
+                navController.navigate(DetailsScreen.Overview.passParams(point, idCourse))
             }
 
 

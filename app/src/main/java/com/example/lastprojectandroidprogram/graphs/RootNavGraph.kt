@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.lastprojectandroidprogram.HomeScreen
+import com.example.lastprojectandroidprogram.Response.WordResponse
 
 @Composable
 fun RootNavigationGraph(navController: NavHostController) {
@@ -28,5 +29,10 @@ object Graph {
     const val DETAIL = "detail_graph"
     var TOKEN_ACCESS = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMSwiZXhwIjoxNzE3NzA0MzAyfQ.KBJ5MUFQWGmUPlDJllsVk2vCM0pGHtpyihScaFt2uTY"
 
+
+}
+object  TotalAnswer{
+
+    var listAnser = mutableListOf<WordResponse>()
 
 }

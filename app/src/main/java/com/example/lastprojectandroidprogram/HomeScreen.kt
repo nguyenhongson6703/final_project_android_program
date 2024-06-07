@@ -142,7 +142,7 @@ fun CourseListItem(
                     verticalArrangement = Arrangement.Center
                 ) {
                     ButtonRole(roleButton = "Ôn siêu tốc", imageVector = Icons.Default.WatchLater, courseParticipate,
-                        {navController.navigate(DetailsScreen.DetailReview.passParams(courseParticipate.courseId, 1, 5, 0)) } )
+                        {navController.navigate(DetailsScreen.ReviewVocabulary.passParams(courseParticipate.courseId, 1, 20, 3,0)) } )
                 }
                 Column(
                     modifier = Modifier

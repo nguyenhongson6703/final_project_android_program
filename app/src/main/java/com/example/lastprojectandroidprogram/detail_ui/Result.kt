@@ -56,15 +56,21 @@ import androidx.compose.material.icons.filled.WatchLater
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.navigation.NavHostController
+import com.example.lastprojectandroidprogram.Response.WordResponse
 import com.example.lastprojectandroidprogram.components.ProgressBar
+import com.example.lastprojectandroidprogram.graphs.DetailsScreen
+import com.example.lastprojectandroidprogram.graphs.TotalAnswer
 import com.example.lastprojectandroidprogram.ui.theme.AppTheme
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ResultScreen(modifier: Modifier = Modifier) {
+fun ResultScreen(modifier: Modifier = Modifier, idCourse : Int, point: Int, navComtroller: NavHostController) {
     Column(modifier = modifier
         .fillMaxSize()
+        .padding(bottom = 100.dp)
+        .verticalScroll(rememberScrollState())
     ) {
         TopAppBar(
             title = { Text(text = "TOEIC NÂNG CAO", style = TextStyle(fontWeight = FontWeight.Bold), fontSize = 25.sp) },
@@ -84,32 +90,26 @@ fun ResultScreen(modifier: Modifier = Modifier) {
                 .rotate(-2f)  // Nghiêng 15 độ
                 .align(Alignment.CenterHorizontally)
         )
-        ProgressCard()
+        ProgressCard(point)
         Column(modifier = Modifier
             .fillMaxWidth()
         ) {
-            AchievementCard(listOf(
-                Pair("Jacket", "Áo khoác"),
-                Pair("Coupon", "Phiếu mua hàng"),
-                Pair("Site", "Địa điểm, vị trí")
-            ))
+            AchievementCard(TotalAnswer.listAnser)
+        }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly  // Căn chỉnh các nút cho đều
+        ){
+            ButtonRole(role = 1, imageVector = Icons.Default.MenuBook, idCourse, navComtroller )
+            ButtonRole(role = 2, imageVector = Icons.Default.AutoStories, idCourse, navComtroller )
+            ButtonRole(role = 3, imageVector = Icons.Default.WatchLater, idCourse, navComtroller)
         }
     }
 }
-@Composable
-fun Navigation(){
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceEvenly  // Căn chỉnh các nút cho đều
-    ){
-        ButtonRole(roleButton = "Ôn tập", imageVector = Icons.Default.MenuBook )
-        ButtonRole(roleButton = "Học từ mới", imageVector = Icons.Default.AutoStories )
-        ButtonRole(roleButton = "Ôn siêu tốc", imageVector = Icons.Default.WatchLater)
-    }
-}
+
 
 @Composable
-fun ProgressCard() {
+fun ProgressCard(point: Int) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -141,7 +141,7 @@ fun ProgressCard() {
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
-                    text = "64",
+                    text = "$point",
                     style = TextStyle(fontWeight = FontWeight.Bold),
                     fontSize = 25.sp,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
@@ -168,7 +168,7 @@ fun ProgressCard() {
 }
 
 @Composable
-fun AchievementCard(achievements: List<Pair<String, String>>) {
+fun AchievementCard(achievements: List<WordResponse>) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -186,6 +186,7 @@ fun AchievementCard(achievements: List<Pair<String, String>>) {
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
+                .height(120.dp)
                 .padding(16.dp)
 
         ) {
@@ -196,14 +197,14 @@ fun AchievementCard(achievements: List<Pair<String, String>>) {
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = item.first,
+                        text = item.english,
                         style = TextStyle(fontWeight = FontWeight.Bold),
                         fontSize = 18.sp,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
                     Spacer(modifier = Modifier.height(10.dp))
                     Text(
-                        text = item.second,
+                        text = item.vietnamese,
                         fontSize = 16.sp,
                         modifier = Modifier.align(Alignment.CenterHorizontally)
                     )
@@ -215,11 +216,24 @@ fun AchievementCard(achievements: List<Pair<String, String>>) {
 }
 
 @Composable
-fun ButtonRole(roleButton : String, imageVector : ImageVector){
+fun ButtonRole(role : Int, imageVector : ImageVector, idCourse: Int, navComtroller: NavHostController){
     Column(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Button(onClick = { /*TODO*/ },
+        Button(onClick = {
+            TotalAnswer.listAnser.clear()
+
+            if(role == 1){
+
+                navComtroller.navigate(DetailsScreen.ReviewVocabulary.passParams(id_course = idCourse, current = 1, des = 20, times = 3, point = 0))
+            }else if(role == 2){
+                navComtroller.navigate(DetailsScreen.NewWord.passParams(id_course = idCourse, current = 1, des = 5, point = 0))
+
+            }else{
+                navComtroller.navigate(DetailsScreen.DetailReview.passParams(id_course = idCourse, current = 1, des = 5, point = 0))
+
+        }
+        },
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.inversePrimary,
@@ -231,7 +245,9 @@ fun ButtonRole(roleButton : String, imageVector : ImageVector){
             )
         }
         Text(
-            text = roleButton,
+            text = if (role == 1) "Ôn siêu tốc"
+            else if(role == 2) "Học từ mới"
+            else "Ôn tập",
             style = MaterialTheme.typography.labelSmall
         )
     }
@@ -241,8 +257,6 @@ fun ButtonRole(roleButton : String, imageVector : ImageVector){
 @Composable
 fun ResultPreview() {
     AppTheme {
-        Scaffold(bottomBar = { Navigation()}) {
-                paddingValues -> ResultScreen(Modifier.padding(paddingValues))
-        }
+       // ResultScreen()
     }
 }
